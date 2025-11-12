@@ -42,7 +42,7 @@ resource modelDeployment 'Microsoft.CognitiveServices/accounts/deployments@2025-
     }
     versionUpgradeOption: 'OnceNewDefaultVersionAvailable'
     currentCapacity: deployment.sku.capacity
-    raiPolicyName: deployment.?raiPolicyName
+    raiPolicyName: deployment.?raiPolicyName ?? 'Microsoft.DefaultV2'
   }
   sku: {
     name: deployment.sku.name
@@ -51,7 +51,7 @@ resource modelDeployment 'Microsoft.CognitiveServices/accounts/deployments@2025-
 }]
 
 // Create single APIM backend for Azure OpenAI native endpoint per region
-resource apimBackendAzureOpenAI 'Microsoft.ApiManagement/service/backends@2023-05-01-preview' = {
+resource apimBackendAzureOpenAI 'Microsoft.ApiManagement/service/backends@2024-06-01-preview' = {
   parent: apimService
   name: 'aoai-${regionAbbreviation}'
   properties: {
@@ -61,6 +61,26 @@ resource apimBackendAzureOpenAI 'Microsoft.ApiManagement/service/backends@2023-0
     tls: {
       validateCertificateChain: true
       validateCertificateName: true
+    }
+    circuitBreaker: {
+      rules: [
+        {
+          name: 'breakonthrottle'
+          failureCondition: {
+            count: 1
+            interval: 'PT10S'
+            statusCodeRanges: [
+              {
+                min: 429
+                max: 429
+              }
+            ]
+            errorReasons: []
+          }
+          tripDuration: 'PT10S'
+          acceptRetryAfter: true
+        }
+      ]
     }
   }
   dependsOn: [

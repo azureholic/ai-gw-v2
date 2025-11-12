@@ -118,7 +118,7 @@ module modelDeployments 'modules/model-deployments.bicep' = [for (location, i) i
     modelDeployments: [for deployment in location.deployments: {
       deploymentName: deployment.deploymentName
       model: {
-        format: 'OpenAI'
+        format: deployment.format
         name: deployment.name
         version: deployment.version
       }
@@ -127,6 +127,7 @@ module modelDeployments 'modules/model-deployments.bicep' = [for (location, i) i
         capacity: deployment.skuCapacity
       }
       priority: deployment.?priority ?? 1
+      raiPolicyName: deployment.?raiPolicyName ?? 'Microsoft.DefaultV2'
     }]
   }
   dependsOn: [
@@ -145,7 +146,7 @@ var allDeploymentNames = union(region0Deployments, union(region1Deployments, reg
 
 // Create backend pool configurations - one pool per model with regional backends
 var aoaiBackendPoolConfigs = [for (deploymentName, idx) in allDeploymentNames: {
-  poolName: 'pool-aoai-${replace(deploymentName, '.', '-dot-')}'
+  poolName: 'pool-${replace(deploymentName, '.', '-dot-')}'
   deploymentName: deploymentName
   backends: union(
     contains(region0Deployments, deploymentName) ? [{

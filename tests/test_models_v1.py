@@ -7,7 +7,7 @@ from azure.identity import DefaultAzureCredential
 
 # Configuration
 APIM_ENDPOINT = os.getenv("APIM_ENDPOINT", "https://apim-acc-genaishared-lxpp27stioik4.azure-api.net")
-MODEL_NAME = "gpt-4o-mini-2024-07-18"  # Using OpenAI v1 API format
+MODEL_NAME = "phi-4"  # Using OpenAI v1 API format
 
 def test_chat_completion():
     """Test chat completion using OpenAI v1 API format through APIM with managed identity"""
@@ -69,7 +69,7 @@ def test_streaming_completion():
             messages=[
                 {"role": "user", "content": "What is Azure API Management?"}
             ],
-            max_tokens=1000,
+            max_tokens=100,
             stream=True
         )
         

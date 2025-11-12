@@ -33,7 +33,7 @@
         <!-- Set backend pool using deployment name with dots replaced by '-dot-' and spaces removed -->
         <set-variable name="backendId" value="@{
             var deployment = (string)context.Variables[&quot;deploymentName&quot;];
-            return deployment == &quot;N/A&quot; ? &quot;aoai-default-backend&quot; : &quot;pool-aoai-&quot; + deployment.Replace(&quot;.&quot;, &quot;-dot-&quot;).Replace(&quot; &quot;, &quot;&quot;);
+            return deployment == &quot;N/A&quot; ? &quot;aoai-default-backend&quot; : &quot;pool-&quot; + deployment.Replace(&quot;.&quot;, &quot;-dot-&quot;).Replace(&quot; &quot;, &quot;&quot;);
         }" />
         
         <set-backend-service id="apim-generated-policy" backend-id="@((string)context.Variables[&quot;backendId&quot;])" />
@@ -76,7 +76,9 @@
     </inbound>
     
     <backend>
-        <base />
+        <retry condition="@(context.Response.StatusCode == 429)" count="2" interval="1" first-fast-retry="true">
+            <forward-request />
+        </retry>
     </backend>
     
     <outbound>

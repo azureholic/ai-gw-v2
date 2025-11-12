@@ -31,7 +31,9 @@ param openAILocations = [
         skuCapacity: 10
         name: 'gpt-4o-mini'
         version: '2024-07-18'
+        format: 'OpenAI'
         priority: 1
+        raiPolicyName: 'Microsoft.DefaultV2'
       }
       // {
       //   deploymentName: 'gpt-4o-2024-08-06'
@@ -126,7 +128,9 @@ param openAILocations = [
         skuCapacity: 30
         name: 'gpt-4o-mini'
         version: '2024-07-18'
+        format: 'OpenAI'
         priority: 1
+        raiPolicyName: 'Microsoft.DefaultV2'
       }
       {
         deploymentName: 'gpt-4o-mini-2024-07-18'
@@ -134,7 +138,9 @@ param openAILocations = [
         skuCapacity: 10
         name: 'gpt-4o-mini'
         version: '2024-07-18'
+        format: 'OpenAI'
         priority: 2
+        raiPolicyName: 'Microsoft.DefaultV2'
       }
       // {
       //   deploymentName: 'gpt-4o-2024-08-06-standard'
@@ -176,6 +182,16 @@ param openAILocations = [
       //   version: '2025-01-31'
       //   priority: 1
       // }
+      {
+        deploymentName: 'Phi-4'
+        skuName: 'GlobalStandard'
+        skuCapacity: 1
+        name: 'Phi-4'
+        version: '7'
+        format: 'Microsoft'
+        priority: 3
+        raiPolicyName: 'Microsoft.DefaultV2'
+      }
     ]
   }
   {
@@ -245,7 +261,9 @@ param openAILocations = [
         skuCapacity: 10
         name: 'gpt-4o-mini'
         version: '2024-07-18'
+        format: 'OpenAI'
         priority: 3
+        raiPolicyName: 'Microsoft.DefaultV2'
       }
       // {
       //   deploymentName: 'o3-mini-2025-01-31'

@@ -1,14 +1,9 @@
 {
     "resourceGroupNames": [
-        "rg-genai-gw-v2-002"
+        "rg-genai-gw-v2"
     ],
     "tags": {
-        "CmdbApplicationID": "7777",
-        "ApplicationID": "7777",
-        "ApplicationName": "SharedResources",
-        "ApplicationOwner": "martin.kirilov@kpn.com",
-        "AppTechOwner": "martin.kirilov@kpn.com",
-        "BillingIdentifier": "GenAILab",
-        "BusinessUnit": "KPN TDO Data Office"
+        "ApplicationName": "GenAIGatewayV2",
+        "BusinessUnit": "AI CoE"
     }
 }

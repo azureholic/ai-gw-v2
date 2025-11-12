@@ -1,0 +1,37 @@
+// Query to show Azure OpenAI token metrics from Application Insights
+// Correlates with requests table using Request ID from custom dimensions
+
+customMetrics
+| where name == "Prompt Tokens" or name == "Completion Tokens" or name == "Total Tokens"
+| extend 
+    Deployment = tostring(customDimensions.Deployment),
+    RequestId = tostring(customDimensions["Request ID"]),
+    Streaming = tostring(customDimensions.Streaming),
+    MetricType = name
+| summarize 
+    PromptTokens = sumif(valueSum, name == "Prompt Tokens"),
+    CompletionTokens = sumif(valueSum, name == "Completion Tokens"),
+    TotalTokens = sumif(valueSum, name == "Total Tokens"),
+    Deployment = any(Deployment),
+    Streaming = any(Streaming)
+    by RequestId, bin(timestamp, 1s)
+| where TotalTokens > 0 and isnotempty(RequestId)
+| join kind=inner (
+    requests
+    | extend RequestId = tostring(customDimensions["Request Id"]),
+             OperationName = tostring(customDimensions["Operation Name"])
+    | where isnotempty(RequestId)
+    | project timestamp, OperationName, duration, performanceBucket, resultCode, RequestId
+) on RequestId
+| project 
+    timestamp,
+    name = OperationName,
+    Deployment,
+    Streaming,
+    duration,
+    performanceBucket,
+    resultCode,
+    PromptTokens,
+    CompletionTokens,
+    TotalTokens
+| order by timestamp desc

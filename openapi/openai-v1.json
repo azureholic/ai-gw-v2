@@ -1,0 +1,408 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "OpenAI API",
+    "description": "The OpenAI REST API",
+    "version": "2.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.openai.com/v1"
+    }
+  ],
+  "paths": {
+    "/chat/completions": {
+      "post": {
+        "operationId": "createChatCompletion",
+        "summary": "Creates a model response for the given chat conversation",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateChatCompletionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateChatCompletionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/completions": {
+      "post": {
+        "operationId": "createCompletion",
+        "summary": "Creates a completion for the provided prompt and parameters",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCompletionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateCompletionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/embeddings": {
+      "post": {
+        "operationId": "createEmbedding",
+        "summary": "Creates an embedding vector representing the input text",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEmbeddingRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateEmbeddingResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateChatCompletionRequest": {
+        "type": "object",
+        "required": ["model", "messages"],
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "ID of the model to use"
+          },
+          "messages": {
+            "type": "array",
+            "description": "A list of messages comprising the conversation so far",
+            "items": {
+              "$ref": "#/components/schemas/ChatCompletionRequestMessage"
+            }
+          },
+          "temperature": {
+            "type": "number",
+            "default": 1,
+            "minimum": 0,
+            "maximum": 2
+          },
+          "top_p": {
+            "type": "number",
+            "default": 1,
+            "minimum": 0,
+            "maximum": 1
+          },
+          "n": {
+            "type": "integer",
+            "default": 1,
+            "minimum": 1,
+            "maximum": 128
+          },
+          "stream": {
+            "type": "boolean",
+            "default": false
+          },
+          "max_tokens": {
+            "type": "integer"
+          },
+          "presence_penalty": {
+            "type": "number",
+            "default": 0,
+            "minimum": -2,
+            "maximum": 2
+          },
+          "frequency_penalty": {
+            "type": "number",
+            "default": 0,
+            "minimum": -2,
+            "maximum": 2
+          },
+          "user": {
+            "type": "string"
+          }
+        }
+      },
+      "ChatCompletionRequestMessage": {
+        "type": "object",
+        "required": ["role", "content"],
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": ["system", "user", "assistant", "function"]
+          },
+          "content": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateChatCompletionResponse": {
+        "type": "object",
+        "required": ["id", "object", "created", "model", "choices"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "type": "string"
+          },
+          "created": {
+            "type": "integer"
+          },
+          "model": {
+            "type": "string"
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatCompletionChoice"
+            }
+          },
+          "usage": {
+            "$ref": "#/components/schemas/CompletionUsage"
+          }
+        }
+      },
+      "ChatCompletionChoice": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer"
+          },
+          "message": {
+            "$ref": "#/components/schemas/ChatCompletionResponseMessage"
+          },
+          "finish_reason": {
+            "type": "string"
+          }
+        }
+      },
+      "ChatCompletionResponseMessage": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateCompletionRequest": {
+        "type": "object",
+        "required": ["model", "prompt"],
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "prompt": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "max_tokens": {
+            "type": "integer",
+            "default": 16
+          },
+          "temperature": {
+            "type": "number",
+            "default": 1
+          },
+          "top_p": {
+            "type": "number",
+            "default": 1
+          },
+          "n": {
+            "type": "integer",
+            "default": 1
+          },
+          "stream": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "CreateCompletionResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "type": "string"
+          },
+          "created": {
+            "type": "integer"
+          },
+          "model": {
+            "type": "string"
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompletionChoice"
+            }
+          },
+          "usage": {
+            "$ref": "#/components/schemas/CompletionUsage"
+          }
+        }
+      },
+      "CompletionChoice": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "index": {
+            "type": "integer"
+          },
+          "finish_reason": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateEmbeddingRequest": {
+        "type": "object",
+        "required": ["model", "input"],
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "input": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "user": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateEmbeddingResponse": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Embedding"
+            }
+          },
+          "usage": {
+            "$ref": "#/components/schemas/EmbeddingUsage"
+          }
+        }
+      },
+      "Embedding": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer"
+          },
+          "object": {
+            "type": "string"
+          },
+          "embedding": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      "CompletionUsage": {
+        "type": "object",
+        "properties": {
+          "prompt_tokens": {
+            "type": "integer"
+          },
+          "completion_tokens": {
+            "type": "integer"
+          },
+          "total_tokens": {
+            "type": "integer"
+          }
+        }
+      },
+      "EmbeddingUsage": {
+        "type": "object",
+        "properties": {
+          "prompt_tokens": {
+            "type": "integer"
+          },
+          "total_tokens": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ]
+}

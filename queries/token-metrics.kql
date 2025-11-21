@@ -21,8 +21,17 @@ customMetrics
     | extend RequestId = tostring(customDimensions["Request Id"]),
              OperationName = tostring(customDimensions["Operation Name"])
     | where isnotempty(RequestId)
-    | project timestamp, OperationName, duration, performanceBucket, resultCode, RequestId
+    | project timestamp, OperationName, duration, performanceBucket, resultCode, RequestId, operation_Id
 ) on RequestId
+| join kind=leftouter (
+    dependencies
+    | summarize 
+        FoundryEndpoint = any(data),
+        TargetService = any(target),
+        CallType = any(type),
+        ServiceName = any(name)
+        by operation_Id
+) on operation_Id
 | project 
     timestamp,
     name = OperationName,
@@ -33,5 +42,9 @@ customMetrics
     resultCode,
     PromptTokens,
     CompletionTokens,
-    TotalTokens
+    TotalTokens,
+    FoundryEndpoint,
+    TargetService,
+    CallType,
+    ServiceName
 | order by timestamp desc
